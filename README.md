@@ -1,6 +1,6 @@
 # Jie Lin — Financial Research, Analysis & Products
 
-[Explore the portfolio](https://jie-lin-portfolio.t4ro.chatgpt.site/) · [LinkedIn](https://www.linkedin.com/in/jie-lin-793167380/) · [GitHub](https://github.com/JayChaseAuto)
+[Explore the portfolio](https://jaychaseauto.github.io/) · [LinkedIn](https://www.linkedin.com/in/jie-lin-793167380/) · [GitHub](https://github.com/JayChaseAuto)
 
 A portfolio of financial models, reproducible studies and product decisions. Each project explains its question, method, interpretation and limitations.
 
@@ -8,10 +8,10 @@ A portfolio of financial models, reproducible studies and product decisions. Eac
 
 | Area | Project | What you can inspect |
 | --- | --- | --- |
-| [Research](https://jie-lin-portfolio.t4ro.chatgpt.site/research/) | Black–Scholes and Merton jump diffusion | European call/put prices, variance-matched comparison, seeded paths, numerical validation and a printable working paper |
-| [Analyze](https://jie-lin-portfolio.t4ro.chatgpt.site/analyze/) | Five-year operating DCF | Fictional-business forecasts, scenarios, terminal reinvestment, enterprise-to-equity bridge and WACC/growth sensitivity |
-| [Analyze / VWAP](https://jie-lin-portfolio.t4ro.chatgpt.site/analyze/vwap/) | Execution benchmarking | Reproducible synthetic trades, selectable windows, buy/sell execution cost and CSV exports |
-| [Build](https://jie-lin-portfolio.t4ro.chatgpt.site/build/) | Financial Analyzer case study | Supported import workflow, implementation decisions and limitations; Ample is a secondary interface prototype |
+| [Research](https://jaychaseauto.github.io/research/) | Black–Scholes and Merton jump diffusion | European call/put prices, variance-matched comparison, seeded paths, numerical validation and a printable working paper |
+| [Analyze](https://jaychaseauto.github.io/analyze/) | Five-year operating DCF | Fictional-business forecasts, scenarios, terminal reinvestment, enterprise-to-equity bridge and WACC/growth sensitivity |
+| [Analyze / VWAP](https://jaychaseauto.github.io/analyze/vwap/) | Execution benchmarking | Reproducible synthetic trades, selectable windows, buy/sell execution cost and CSV exports |
+| [Build](https://jaychaseauto.github.io/build/) | Financial Analyzer case study | Supported import workflow, implementation decisions and limitations; Ample is a secondary interface prototype |
 
 The valuation business is fictional. VWAP uses synthetic trades. Option inputs are chosen risk-neutral assumptions, not historically calibrated estimates. These demonstrations do not claim trading performance or observed investment results. Financial Analyzer's application source is not included in this repository; its case study describes verified implementation.
 
@@ -56,3 +56,7 @@ The default DCF gives CAD **16.963190 per share**. At the options paper's refere
 - [Black & Scholes, The Pricing of Options and Corporate Liabilities (1973)](https://www.journals.uchicago.edu/doi/10.1086/260062)
 - [Merton, Option Pricing When Underlying Stock Returns Are Discontinuous (working paper 1975; published 1976)](https://dspace.mit.edu/entities/publication/e63635d9-d2bf-40ce-a79b-67786dd9f105)
 - [Damodaran, Excess Returns and Terminal Value](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/termvalueexreturns.htm)
+
+## Publishing
+
+The public site is served from the root of [JayChaseAuto.github.io](https://github.com/JayChaseAuto/JayChaseAuto.github.io), with GitHub Pages using its `main` branch. This repository is the maintained source. After building and checking changes, publish the contents of `dist` to that deployment repository, preserving its `.git` directory and `.nojekyll` file.
