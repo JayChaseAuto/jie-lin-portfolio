@@ -1,0 +1,177 @@
+{
+  "status": "Simulation research note; chosen risk-neutral inputs, no calibration",
+  "created": "2026-09-30",
+  "inputs": {
+    "spot": 100,
+    "strike": 100,
+    "maturity": 1,
+    "rate": 0.04,
+    "dividend": 0.01,
+    "volatility": 0.2,
+    "jumpIntensity": 0.5,
+    "jumpMean": -0.05,
+    "jumpVolatility": 0.15,
+    "type": "call"
+  },
+  "reference": {
+    "blackScholes": {
+      "call": 9.31973845519753,
+      "put": 6.393698995513041,
+      "price": 9.31973845519753
+    },
+    "merton": {
+      "call": 10.295521135074573,
+      "put": 7.369481675379548,
+      "price": 10.295521135074573,
+      "terms": 12,
+      "probabilityTailBound": 3.215060770520617e-13,
+      "assetTailBound": 2.0551143124467474e-13,
+      "callTailBound": 2.034665583373438e-11,
+      "putTailBound": 3.08899643454914e-11,
+      "priceTailBound": 2.034665583373438e-11
+    },
+    "varianceMatched": {
+      "call": 10.435592308497199,
+      "put": 7.509552848812717,
+      "price": 10.435592308497199
+    },
+    "matchedVolatility": 0.22912878474779202
+  },
+  "monteCarlo": {
+    "call": {
+      "price": 10.28213955530951,
+      "standardError": 0.0353356671162272,
+      "ci95": [
+        10.212881647761703,
+        10.351397462857316
+      ]
+    },
+    "put": {
+      "price": 7.350461408667373,
+      "standardError": 0.023902916945443463,
+      "ci95": [
+        7.303611691454304,
+        7.397311125880442
+      ]
+    },
+    "price": 10.28213955530951,
+    "standardError": 0.0353356671162272,
+    "ci95": [
+      10.212881647761703,
+      10.351397462857316
+    ],
+    "martingale": {
+      "mean": 99.0106220618754,
+      "expected": 99.0049833749168,
+      "standardError": 0.050751820538679,
+      "ci95": [
+        98.91114849361958,
+        99.11009563013121
+      ]
+    },
+    "paths": 200000,
+    "seed": 1976
+  },
+  "intensitySweep": [
+    {
+      "jumpIntensity": 0,
+      "blackScholes": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753
+      },
+      "merton": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753,
+        "terms": 1,
+        "probabilityTailBound": 0,
+        "assetTailBound": 0,
+        "callTailBound": 0,
+        "putTailBound": 0,
+        "priceTailBound": 0
+      },
+      "varianceMatched": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753
+      },
+      "matchedVolatility": 0.2
+    },
+    {
+      "jumpIntensity": 0.5,
+      "blackScholes": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753
+      },
+      "merton": {
+        "call": 10.295521135074573,
+        "put": 7.369481675379548,
+        "price": 10.295521135074573,
+        "terms": 12,
+        "probabilityTailBound": 3.215060770520617e-13,
+        "assetTailBound": 2.0551143124467474e-13,
+        "callTailBound": 2.034665583373438e-11,
+        "putTailBound": 3.08899643454914e-11,
+        "priceTailBound": 2.034665583373438e-11
+      },
+      "varianceMatched": {
+        "call": 10.435592308497199,
+        "put": 7.509552848812717,
+        "price": 10.435592308497199
+      },
+      "matchedVolatility": 0.22912878474779202
+    },
+    {
+      "jumpIntensity": 1,
+      "blackScholes": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753
+      },
+      "merton": {
+        "call": 11.195343902535605,
+        "put": 8.269304442839502,
+        "price": 11.195343902535605,
+        "terms": 15,
+        "probabilityTailBound": 3.0007832748889555e-13,
+        "assetTailBound": 1.7386369649423627e-13,
+        "callTailBound": 1.7213372380913443e-11,
+        "putTailBound": 2.883120879698231e-11,
+        "priceTailBound": 1.7213372380913443e-11
+      },
+      "varianceMatched": {
+        "call": 11.425322865833067,
+        "put": 8.499283406148578,
+        "price": 11.425322865833067
+      },
+      "matchedVolatility": 0.25495097567963926
+    },
+    {
+      "jumpIntensity": 2,
+      "blackScholes": {
+        "call": 9.31973845519753,
+        "put": 6.393698995513041,
+        "price": 9.31973845519753
+      },
+      "merton": {
+        "call": 12.811886349042759,
+        "put": 9.885846889329043,
+        "price": 12.811886349042759,
+        "terms": 19,
+        "probabilityTailBound": 6.481026886965862e-13,
+        "assetTailBound": 3.334865352138042e-13,
+        "callTailBound": 3.301682887460129e-11,
+        "putTailBound": 6.226902187859058e-11,
+        "priceTailBound": 3.301682887460129e-11
+      },
+      "varianceMatched": {
+        "call": 13.151137270960923,
+        "put": 10.225097811276434,
+        "price": 13.151137270960923
+      },
+      "matchedVolatility": 0.30000000000000004
+    }
+  ]
+}
