@@ -1,15 +1,16 @@
 import {mkdir,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {resolve,dirname} from 'node:path';
-import {DCF_DEFAULTS,OPTION_DEFAULTS,calculateDCF,optionComparison,monteCarloMerton,generateOptionPaths} from '../dist/assets/models.mjs';
+import {DCF_DEFAULTS,DCF_PRESETS,OPTION_DEFAULTS,calculateDCF,optionComparison,monteCarloMerton,generateOptionPaths} from '../dist/assets/models.mjs';
 import {vwapResult,valuationResult,optionsResult,TAPE} from '../dist/assets/views.mjs';
 import {esc,fmt,pct,lineChart,barChart,legend,figure,table,timeLabel} from '../dist/assets/render.mjs';
+import {valuationPreview,analyzerPreview} from './project-visuals.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const github='https://github.com/JayChaseAuto',linkedin='https://www.linkedin.com/in/jie-lin-793167380/';
 const ext=(url,label,cls='text-link')=>`<a class="${cls}" href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
-function header(active){return `<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="wrap nav-row"><a class="brand" href="/" aria-label="Jie Lin, home"><span class="brand-mark" aria-hidden="true">JL</span>Jie Lin</a><nav class="nav-links" aria-label="Main navigation">${[['analyze','Analysis'],['build','Tools'],['research','Research']].map(([path,label])=>`<a href="/${path}/" ${active===path?'aria-current="page"':''}>${label}</a>`).join('')}<span class="nav-meta">Toronto, Canada</span></nav></div></header>`;}
-function footer(){return `<section class="wrap contact-strip"><div><h2>Let’s talk about financial analysis.</h2><p>Pursuing financial analyst opportunities in business performance, valuation and investment analysis.</p></div><div class="actions">${ext(linkedin,'Connect on LinkedIn','button')}${ext(github,'GitHub')}${ext('https://github.com/JayChaseAuto/jie-lin-portfolio','Portfolio source')}</div></section><footer class="site-footer"><div class="wrap footer-row"><span>© 2026 Jie Lin · Financial analysis &amp; analytical tools</span><span>Independent projects &amp; research demonstrations</span></div></footer>`;}
-function page(title,active,body,kind=''){return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} | Jie Lin</title><meta name="description" content="Jie Lin’s financial analyst portfolio: valuation, business analysis and practical tools that support financial decisions."><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/site.css">${kind?'<script type="module" src="/assets/app.mjs"></script>':''}</head><body class="${kind}-page" data-page="${kind}">${header(active)}<main id="main" tabindex="-1">${body}</main>${footer()}</body></html>`;}
+function header(active){return `<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="wrap nav-row"><a class="brand" href="/" aria-label="Jie Lin, home"><span class="brand-mark" aria-hidden="true">JL</span><span class="brand-name">Jie Lin<span>Finance portfolio</span></span></a><nav class="nav-links" aria-label="Main navigation">${[['analyze','Analysis'],['build','Tools'],['research','Research']].map(([path,label])=>`<a href="/${path}/" ${active===path?'aria-current="page"':''}>${label}</a>`).join('')}<span class="nav-meta">Toronto, Canada</span></nav></div></header>`;}
+function footer(){return `<section class="wrap contact-strip"><div><p class="eyebrow">Let’s connect</p><h2>Good analysis starts<br>with a conversation.</h2><p>Pursuing financial analyst opportunities in business performance, valuation and investment analysis.</p></div><div class="contact-actions">${ext(linkedin,'Connect on LinkedIn <span aria-hidden="true">↗</span>','button')}<div class="contact-secondary">${ext(github,'GitHub')}${ext('https://github.com/JayChaseAuto/jie-lin-portfolio','Portfolio source')}</div></div></section><footer class="site-footer"><div class="wrap footer-row"><span>© 2026 Jie Lin</span><span>Financial analysis. Practical initiative.</span><span>Independent projects &amp; research</span></div></footer>`;}
+function page(title,active,body,kind=''){return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)} | Jie Lin</title><meta name="description" content="Jie Lin’s financial analyst portfolio: valuation, business analysis and practical tools that support financial decisions."><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/theme.css">${kind?'<script type="module" src="/assets/app.mjs"></script>':''}</head><body class="${kind||active||'home'}-page" data-page="${kind}">${header(active)}<main id="main" tabindex="-1">${body}</main>${footer()}</body></html>`;}
 function heading(kicker,title,lead,meta='',crumb='',parent='research'){return `<div class="wrap page-heading">${crumb?`<div class="breadcrumb"><a href="/${parent}/">${parent==='analyze'?'Analysis':'Research'}</a> / ${crumb}</div>`:''}<p class="eyebrow">${kicker}</p><h1>${title}</h1><p class="lede">${lead}</p>${meta?`<div class="meta-line">${meta}</div>`:''}</div>`;}
 const stories=items=>`<div class="story-grid">${items.map(([t,p])=>`<section><h2>${t}</h2><p>${p}</p></section>`).join('')}</div>`;
 const field=(key,label,value,{min,max,step='any',type='number'}={})=>`<div class="field"><label for="${key}">${label}</label><input id="${key}" name="${key}" type="${type}" value="${value}" required ${min!==undefined?`min="${min}"`:''} ${max!==undefined?`max="${max}"`:''} step="${step}"></div>`;
@@ -19,68 +20,74 @@ function lab(form,html){return `<noscript><p>JavaScript is off. The figures belo
 const miniaturePaths=generateOptionPaths({...OPTION_DEFAULTS,jumpIntensity:2},{steps:64,pairs:1,seed:1976});
 const miniSeries=[{name:'Diffusion',color:'#d7b88a',dash:'6 4',points:miniaturePaths.paths[0].diffusion.map(p=>({x:p.t,y:p.price}))},{name:'Jump diffusion',color:'#8fd5c2',points:miniaturePaths.paths[0].merton.map(p=>({x:p.t,y:p.price}))}];
 const heroDCF=calculateDCF();
-const heroChart=barChart({points:heroDCF.forecast.map(p=>({x:`Y${p.year}`,y:p.freeCashFlow})),width:520,height:240,title:'Five-year forecast free cash flow for a fictional business',yLabel:'FCFF · CAD millions',color:'#8fd5c2'});
-const workflowGraphic=`<svg viewBox="0 0 370 175" role="img" aria-label="Data pipeline from import to normalize, analyze and export"><path d="M60 47H310M60 128H310M185 47V128" stroke="#99b2a4" fill="none" stroke-dasharray="4 4"/>${[[20,20,'01','Import'],[220,20,'02','Normalize'],[20,102,'03','Analyze'],[220,102,'04','Export']].map(([x,y,n,t])=>`<rect x="${x}" y="${y}" width="132" height="57" fill="#f7f5ef" stroke="#8fa99a"/><text x="${x+12}" y="${y+21}" fill="#076e67" font-size="11" font-family="Arial">${n}</text><text x="${x+12}" y="${y+42}" fill="#132f40" font-size="17" font-family="Georgia">${t}</text>`).join('')}</svg>`;
+const heroChart=barChart({points:heroDCF.forecast.map(p=>({x:`Y${p.year}`,y:p.freeCashFlow})),width:520,height:190,title:'Five-year forecast free cash flow for a fictional business',yLabel:'FCFF · CAD millions',color:'#a8d9bf'});
 const tinyVWAP=lineChart({series:[{name:'Price',color:'#486b9a',points:TAPE.filter((_,i)=>i%8===0).map(p=>({x:p.minute,y:p.price}))},{name:'VWAP',color:'#076e67',dash:'5 3',points:vwapResult().result.chart.filter((_,i)=>i%8===0).map(p=>({x:p.minute,y:p.cumulativeVWAP}))}],width:430,height:210,title:'Synthetic trade price and VWAP preview',xFormat:timeLabel,yFormat:v=>fmt(v,0)});
 const tinyDCF=barChart({points:calculateDCF().forecast.map(p=>({x:`Y${p.year}`,y:p.freeCashFlow})),width:480,height:235,title:'Illustrative five-year free cash flow',yLabel:'FCFF · CAD millions'});
 const miniOptions=lineChart({series:miniSeries.map(s=>({...s,color:s.name==='Diffusion'?'#ad582b':'#076e67'})),width:480,height:235,title:'Illustrative continuous and jump price paths',xFormat:v=>fmt(v,1),yLabel:'Underlying price',xLabel:'Years'});
 const home=page('Financial analysis & analytical tools','',`
 <div class="wrap">
   <section class="hero">
-    <div>
-      <p class="eyebrow">Financial analyst focus</p>
-      <h1>Financial analysis for clearer <em>business and investment decisions.</em></h1>
-      <p class="lede">I’m Jie Lin, with a background in finance and economics. I’m pursuing financial analyst opportunities, with interests in business performance, valuation and capital investment.</p>
-      <p class="hero-support">Through independent projects, I develop financial models and build practical tools that make analysis easier to review and use.</p>
-      <p class="focus-line">Financial modeling · Valuation · Business analysis</p>
-      <div class="actions"><a class="button" href="#selected-work">Explore my work</a><a class="text-link" href="#about">About me</a></div>
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>Pursuing financial analyst opportunities</p>
+      <h1>Financial analysis.<br><em>Clearer decisions.</em></h1>
+      <p class="lede">I’m Jie Lin. I turn financial questions into transparent models, thoughtful analysis and practical tools.</p>
+      <p class="hero-support">With a background in finance and economics, I’m focused on business performance, valuation and capital investment.</p>
+      <div class="actions"><a class="button" href="#selected-work">Explore my work <span aria-hidden="true">↗</span></a><a class="text-link" href="#about">Meet Jie <span aria-hidden="true">↓</span></a></div>
+      <div class="hero-note"><span aria-hidden="true">01—04</span><p>Independent projects.<br>Financial thinking you can explore.</p></div>
     </div>
     <figure class="exhibit">
-      <div class="exhibit-head"><span>Featured financial analysis</span><span>Operating DCF</span></div>
-      <h2 class="exhibit-title">From operating performance to business value.</h2>
-      <p>A five-year cash flow forecast. Assumptions you can inspect.</p>
+      <div class="exhibit-head"><span><span class="exhibit-dot" aria-hidden="true"></span>Valuation study / 01</span><span class="exhibit-badge">Operating DCF</span></div>
+      <h2 class="exhibit-title">What drives business value?</h2>
+      <p class="exhibit-context">Fictional business · illustrative base case</p>
+      <div class="exhibit-metrics"><div><span>Value per diluted share</span><strong>$${fmt(heroDCF.valuePerShare)}<small>CAD</small></strong></div><div><span>Enterprise value</span><strong>$${fmt(heroDCF.enterpriseValue,1)}<small>CAD m</small></strong></div></div>
       ${heroChart}
-      <figcaption class="exhibit-foot"><span>Fictional business · reference scenario</span><a href="/analyze/valuation/">Explore the valuation</a></figcaption>
+      <div class="scenario-strip" aria-label="Illustrative value per share by scenario">${[['downside','Downside'],['base','Base case'],['upside','Upside']].map(([key,label])=>`<div${key==='base'?' class="scenario-base"':''}><span>${label}</span><strong>$${fmt(calculateDCF(DCF_PRESETS[key]).valuePerShare)}</strong></div>`).join('')}</div>
+      <figcaption class="exhibit-foot"><span>Scenario values · CAD per share</span><a href="/analyze/valuation/">Explore the model <span aria-hidden="true">↗</span></a></figcaption>
     </figure>
   </section>
+  <div class="focus-band" aria-label="Areas of focus"><span>Finance at the core.</span><span>Financial modeling</span><span>Valuation</span><span>Business analysis</span><span>Analytical tools</span></div>
   <section class="section" id="selected-work">
-    <div class="section-head"><div><p class="eyebrow">Selected financial work</p><h2>Financial thinking, put into practice.</h2></div><p>Start with the financial question. Follow the assumptions, examine the results and understand the limits.</p></div>
+    <div class="section-head"><div><p class="eyebrow"><span class="section-index" aria-hidden="true">01</span>Selected work</p><h2>Ideas, put into practice.</h2></div><p>Explore the financial question, the assumptions behind it and the work that follows.</p></div>
     <div class="project-grid featured-grid">
-      <article class="project-card">
+      <article class="project-card featured-card">
         <div class="card-top"><span class="category">Valuation &amp; scenario analysis</span><span class="number">01</span></div>
-        <div class="card-visual">${tinyDCF}</div>
+        <div class="card-visual valuation-visual">${valuationPreview(heroDCF)}</div>
+        <div class="project-body">
         <span class="status">Fictional-business demonstration</span>
         <h3>Cash flows, assumptions and value.</h3>
         <p>A five-year operating DCF exploring how growth, margins, reinvestment and the cost of capital affect business and equity value.</p>
-        <p class="project-question"><strong>The decision:</strong> Which assumptions drive the valuation, and how does the estimate change across scenarios?</p>
-        <a class="text-link" href="/analyze/valuation/">Explore the valuation</a>
+        <div class="project-tags"><span>DCF valuation</span><span>Scenario analysis</span></div>
+        <a class="text-link project-link" href="/analyze/valuation/">Explore the valuation <span aria-hidden="true">↗</span></a>
+        </div>
       </article>
-      <article class="project-card">
+      <article class="project-card featured-card">
         <div class="card-top"><span class="category">Business analysis &amp; tools</span><span class="number">02</span></div>
-        <div class="card-visual">${workflowGraphic}</div>
+        <div class="card-visual analyzer-visual">${analyzerPreview()}</div>
+        <div class="project-body">
         <span class="status">Application case study</span>
-        <h3>Financial Analyzer.</h3>
+        <h3>Financial thinking.<br>A practical application.</h3>
         <p>An application for reviewing sales and inventory reports, comparing product performance and inspecting replenishment assumptions.</p>
-        <p class="project-question"><strong>The initiative:</strong> Build a practical workflow that connects operational reports with reviewable analysis.</p>
-        <a class="text-link" href="/build/">Explore the analyzer</a>
+        <div class="project-tags"><span>Sales &amp; inventory</span><span>Excel &amp; CSV</span></div>
+        <a class="text-link project-link" href="/build/">Explore Financial Analyzer <span aria-hidden="true">↗</span></a>
+        </div>
       </article>
     </div>
   </section>
-  <section class="section" aria-labelledby="approach-title">
-    <div class="section-head"><div><p class="eyebrow">How I approach analysis</p><h2 id="approach-title">Start with the decision.</h2></div><p>A calculation becomes useful when someone can understand what it means and what could change the answer.</p></div>
+  <section class="section approach-section" aria-labelledby="approach-title">
+    <div class="section-head"><div><p class="eyebrow"><span class="section-index" aria-hidden="true">02</span>My approach</p><h2 id="approach-title">Start with the decision.</h2></div><p>A useful model tells a clear story about what matters, what changes and why.</p></div>
     <div class="approach-grid">
-      ${[['01','Frame the question.','Identify the decision, the available information and the financial drivers that matter.'],['02','Make assumptions visible.','Document the inputs, examine scenarios and show how sensitive the result is to change.'],['03','Explain the implications.','Connect the output to the original question, with a clear explanation of uncertainty and limitations.']].map(([n,t,p])=>`<article class="approach-step"><span class="number">${n}</span><h3>${t}</h3><p>${p}</p></article>`).join('')}
+      ${[['01','Frame the question.','Identify the decision, the available information and the financial drivers that matter.'],['02','Make assumptions visible.','Document the inputs, examine scenarios and show how sensitive the result is to change.'],['03','Explain the implications.','Connect the output to the original question, with a clear explanation of uncertainty and limitations.']].map(([n,t,p])=>`<article class="approach-step"><span class="number" aria-hidden="true">${n}</span><h3>${t}</h3><p>${p}</p></article>`).join('')}
     </div>
   </section>
   <section class="section" aria-labelledby="additional-title">
-    <div class="section-head"><div><p class="eyebrow">Additional analytical work</p><h2 id="additional-title">Research that tests the assumptions.</h2></div><p>Independent studies in execution benchmarking and option pricing add depth to my financial analysis portfolio.</p></div>
+    <div class="section-head"><div><p class="eyebrow"><span class="section-index" aria-hidden="true">03</span>Further exploration</p><h2 id="additional-title">Curiosity, with a method.</h2></div><p>Independent studies in market execution and option pricing, with calculations you can inspect.</p></div>
     <div class="project-grid additional-grid">
-      <article class="project-card"><div class="card-top"><span class="category">Execution benchmarking</span></div><span class="status">Synthetic-data demonstration</span><h3>VWAP execution analysis.</h3><p>Compare a hypothetical execution with a volume-weighted benchmark. Inspect the selected trades and the calculation behind the result.</p><a class="text-link" href="/analyze/vwap/">Explore the VWAP study</a></article>
-      <article class="project-card"><div class="card-top"><span class="category">Quantitative research</span></div><span class="status">Simulation research note</span><h3>Options and jump risk.</h3><p>Compare continuous-return and jump-diffusion pricing assumptions through reproducible simulations and numerical checks.</p><a class="text-link" href="/research/options/">Read the options research</a></article>
+      <article class="project-card research-card"><div class="card-top"><span class="category">Execution benchmarking</span><span class="research-symbol" aria-hidden="true">∑</span></div><span class="status">Synthetic-data demonstration</span><h3>VWAP execution analysis.</h3><p>Compare a hypothetical execution with a volume-weighted benchmark. Inspect the selected trades and the calculation behind the result.</p><a class="text-link" href="/analyze/vwap/">Explore the VWAP study <span aria-hidden="true">↗</span></a></article>
+      <article class="project-card research-card"><div class="card-top"><span class="category">Quantitative research</span><span class="research-symbol" aria-hidden="true">λ</span></div><span class="status">Simulation research note</span><h3>Options and jump risk.</h3><p>Compare continuous-return and jump-diffusion pricing assumptions through reproducible simulations and numerical checks.</p><a class="text-link" href="/research/options/">Read the options research <span aria-hidden="true">↗</span></a></article>
     </div>
   </section>
   <section class="section about-grid" id="about">
-    <div><p class="eyebrow">About me</p><h2>Finance is my direction.<br>Building is how I take initiative.</h2></div>
+    <div><p class="eyebrow"><span class="section-index" aria-hidden="true">04</span>Behind the work</p><h2>Grounded in finance.<br><em>Driven to build.</em></h2><div class="signature" aria-label="Jie Lin">Jie Lin<span>Finance &amp; economics · Toronto</span></div></div>
     <div><p>My background is in finance and economics, with data development work that has included forecasting schedules for international transportation. I’m pursuing financial analyst roles where I can contribute to business performance analysis, valuation and investment decisions.</p><p>I use independent financial projects to develop my analytical thinking, and build tools to make the work practical and accessible. Each project makes its methods, assumptions and limitations available for review.</p><div class="education"><h3>Education &amp; credentials</h3><div class="credentials"><span>BCom · Finance &amp; Economics</span><span>Canadian Securities Course completed</span><span>CFA Level I candidate</span></div></div></div>
   </section>
 </div>`);

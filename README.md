@@ -36,9 +36,10 @@ Open `http://localhost:8080`. Root-relative links expect hosting at a domain roo
 ## Source layout
 
 - `scripts/build.mjs` generates the HTML pages and reference experiment results.
+- `scripts/project-visuals.mjs` renders the model-derived valuation bridge and conceptual application workflow used on the homepage.
 - `dist/assets/models.mjs` contains financial calculations and seeded simulation.
 - `dist/assets/views.mjs` supplies shared calculated results for charts, tables and exports.
-- `dist/assets/render.mjs`, `app.mjs` and `site.css` provide rendering, interactions and responsive/print styles.
+- `dist/assets/render.mjs`, `app.mjs` and `site.css` provide rendering, interactions and responsive/print styles; `theme.css` supplies the shared editorial presentation.
 - `dist/data/reference-results.json` records the options paper's fixed reference experiment.
 - `tests/` covers numerical behavior and view/export consistency.
 - `scripts/check-site.mjs` checks local links, page landmarks and generated output.
