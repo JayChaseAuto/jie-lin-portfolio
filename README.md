@@ -1,17 +1,17 @@
-# Jie Lin — Financial Research, Analysis & Products
+# Jie Lin — Financial Analysis & Analytical Tools
 
 [Explore the portfolio](https://jaychaseauto.github.io/) · [LinkedIn](https://www.linkedin.com/in/jie-lin-793167380/) · [GitHub](https://github.com/JayChaseAuto)
 
-A portfolio of financial models, reproducible studies and product decisions. Each project explains its question, method, interpretation and limitations.
+A portfolio focused on financial analyst opportunities, with interests in business performance, valuation and capital investment. Financial models lead the work; practical analytical tools demonstrate initiative. Each project explains its question, method, interpretation and limitations.
 
 ## Explore the work
 
 | Area | Project | What you can inspect |
 | --- | --- | --- |
+| [Financial analysis](https://jaychaseauto.github.io/analyze/) | Five-year operating DCF | Fictional-business forecasts, scenarios, terminal reinvestment, enterprise-to-equity bridge and WACC/growth sensitivity |
+| [Analytical tools](https://jaychaseauto.github.io/build/) | Financial Analyzer case study | Sales and inventory report workflow, product comparisons, implementation decisions and limitations; Ample is a secondary interface prototype |
+| [Additional analysis / VWAP](https://jaychaseauto.github.io/analyze/vwap/) | Execution benchmarking | Reproducible synthetic trades, selectable windows, buy/sell execution cost and CSV exports |
 | [Research](https://jaychaseauto.github.io/research/) | Black–Scholes and Merton jump diffusion | European call/put prices, variance-matched comparison, seeded paths, numerical validation and a printable working paper |
-| [Analyze](https://jaychaseauto.github.io/analyze/) | Five-year operating DCF | Fictional-business forecasts, scenarios, terminal reinvestment, enterprise-to-equity bridge and WACC/growth sensitivity |
-| [Analyze / VWAP](https://jaychaseauto.github.io/analyze/vwap/) | Execution benchmarking | Reproducible synthetic trades, selectable windows, buy/sell execution cost and CSV exports |
-| [Build](https://jaychaseauto.github.io/build/) | Financial Analyzer case study | Supported import workflow, implementation decisions and limitations; Ample is a secondary interface prototype |
 
 The valuation business is fictional. VWAP uses synthetic trades. Option inputs are chosen risk-neutral assumptions, not historically calibrated estimates. These demonstrations do not claim trading performance or observed investment results. Financial Analyzer's application source is not included in this repository; its case study describes verified implementation.
 
